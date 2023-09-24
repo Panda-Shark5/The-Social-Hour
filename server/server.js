@@ -6,16 +6,17 @@ const mongoose = require('mongoose');
 
 dotenv.config();
 
+const userRoute = require('./routes/userRouter');
+const postRoute = require('./routes/postRouter');
+
 const port = 3001;
 
-mongoose.connect(process.env.MONGO_KEY, { useNewUrlParser: true, useUnifiedTopology: true }, () => {
+mongoose.connect("mongodb+srv://pkarwe62:JFZBtUu007N2kkwN@cluster0.ru954su.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp", { useNewUrlParser: true, useUnifiedTopology: true }, () => {
     console.log("Successfully connected to MongoDB!");
 });
 
-
-app.get('/api/test', (req, res) => {
-    return res.status(200).send("Our server works holy shit!");
-})
+app.use('/users', userRoute);
+//app.use('/posts', postRoute);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
