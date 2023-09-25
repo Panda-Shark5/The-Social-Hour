@@ -20,4 +20,30 @@ UserController.addUser = async (req, res, next) => {
     }
 }
 
+UserController.verifyUser = async (req, res, next) => {
+
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({ username: username, password: password });
+        res.locals.verifiedUser = user;
+        return next();
+    } catch (err) {
+        return next(err);
+    }
+
+}
+
+UserController.getUser = async (req, res, next) => {
+
+    try {
+        const { id } = req.params;
+        const user = await User.findOne({ _id: id });
+        res.locals.user = user;
+        return next();
+    } catch (err) {
+        return next(err);
+    }
+
+}
+
 module.exports = UserController;
