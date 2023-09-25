@@ -11,15 +11,13 @@ function base64_encode(file) {
 
 PostController.addPost = async (req, res, next) => {
 
-    const caption = req.body.caption;
     const img = req.file.filename;
 
     const encodedImage = base64_encode(path.join(__dirname, img));
 
     try {
         const newPost = new Post({
-            img: encodedImage,
-            caption: caption
+            img: encodedImage
         });
         const post = await newPost.save();
         res.locals.newPost = post;

@@ -13,6 +13,9 @@ app.use(express.urlencoded())
 app.use(bodyParser.json())
 
 app.use(cors())
+const cookieParser = require('cookie-parser');
+
+app.use(cookieParser());
 
 dotenv.config();
 
