@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import UploadImage from './UploadImage';
 
 const FeedPage = props => {
   return(
@@ -7,6 +8,7 @@ const FeedPage = props => {
       <Link className='link' to='/login'>
         <h1>Logout</h1>
       </Link>
+      <UploadImage/>
     </div>
   )
 }

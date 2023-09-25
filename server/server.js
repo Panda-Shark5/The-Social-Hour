@@ -23,10 +23,10 @@ app.use('/posts', postRoute);
 
 const imageStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './public');
+        cb(null, '../public');
     },
     filename: (req, file, cb) => {
-        cb(null, req.body.name);
+        cb(null, file.originalname);
     },
 });
 
@@ -35,7 +35,10 @@ const upload = multer({ storage: imageStorage });
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
     try {
-        return res.status(200).json('File successfully uploaded');
+        // return res.status(200).json('File successfully uploaded');
+
+        // Added redirect because multer keeps sending the user to /api/upload
+        return res.redirect('http://localhost:3000/profile');
     } catch (err) {
         console.log(err);
     }
