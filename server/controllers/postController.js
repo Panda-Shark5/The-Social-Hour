@@ -6,7 +6,6 @@ PostController.addPost = async (req, res, next) => {
     const { userId, img, caption } = req.body;
 
     try {
-        //const response = await User.create({ username: username, password: password });
         const newPost = new Post({
             userId: userId,
             img: img,
@@ -17,8 +16,19 @@ PostController.addPost = async (req, res, next) => {
         res.locals.newPost = post;
         return next();
     } catch (err) {
-        return next(err);
+        return next({});
     }
+}
+
+PostController.upload = async (req, res, next) => {
+    const { img } = req.body; //pulling img from req.body??
+
+    try {
+        req.img = img //passing it on to the next middleware, which is post??
+        next()
+    } catch (err) {
+        return next({})
+    } 
 }
 
 module.exports = PostController;
