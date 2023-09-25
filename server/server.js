@@ -5,6 +5,9 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
+const cookieParser = require('cookie-parser');
+
+app.use(cookieParser())
 
 dotenv.config();
 

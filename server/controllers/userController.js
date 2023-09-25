@@ -1,36 +1,57 @@
 const User = require('../models/UserModel');
+const {formidable} = require('formidable')
 
 const UserController = {};
 
 UserController.addUser = async (req, res, next) => {
-    const { username, password } = req.body;
-
+    console.log('inside adduser')
     try {
-        //const response = await User.create({ username: username, password: password });
-        const newUser = new User({
-            username: username,
-            password: password
-        });
-        console.log(newUser);
-        const user = await newUser.save();
-        res.locals.newUser = user;
-        return next();
+        const form = formidable({});
+        let fields; let files;
+        [fields, files] = await form.parse(req)
+
+        const username = String(fields['username']);
+        const password = String(fields['password']);
+
+        console.log('username is', username)
+        console.log('password is', password)
+
+        const user = await User.create({username: username, password: password})
+        console.log('created user is', user)
+        if (user) {
+            return next()
+        } else {
+            res.redirect('http://localhost:3000/signup')
+        }
     } catch (err) {
-        return next(err);
+        res.redirect('http://localhost:3000/signup')
     }
 }
 
 UserController.verifyUser = async (req, res, next) => {
-
     try {
-        const { username, password } = req.body;
-        const user = await User.findOne({ username: username, password: password });
-        res.locals.verifiedUser = user;
-        return next();
-    } catch (err) {
-        return next(err);
-    }
 
+       const form = formidable({});
+        let fields; let files;
+        [fields, files] = await form.parse(req)
+
+        const username = String(fields['username']);
+        const password = String(fields['password']);
+
+        console.log('username is', username)
+        console.log('password is', password)
+
+        const user = await User.findOne({username: username, password: password})
+        res.locals.verfiedUser = user
+        if (user) {
+            return next()
+        } else {
+            res.redirect('http://localhost:3000/login')
+        }
+    }
+    catch (err) {
+        return next (err)
+    }  
 }
 
 UserController.getUser = async (req, res, next) => {
