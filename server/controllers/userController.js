@@ -1,5 +1,5 @@
 const User = require('../models/UserModel');
-const {formidable} = require('formidable')
+const { formidable } = require('formidable')
 
 const UserController = {};
 
@@ -16,7 +16,7 @@ UserController.addUser = async (req, res, next) => {
         console.log('username is', username)
         console.log('password is', password)
 
-        const user = await User.create({username: username, password: password})
+        const user = await User.create({ username: username, password: password })
         console.log('created user is', user)
         if (user) {
             return next()
@@ -31,7 +31,7 @@ UserController.addUser = async (req, res, next) => {
 UserController.verifyUser = async (req, res, next) => {
     try {
 
-       const form = formidable({});
+        const form = formidable({});
         let fields; let files;
         [fields, files] = await form.parse(req)
 
@@ -41,7 +41,7 @@ UserController.verifyUser = async (req, res, next) => {
         console.log('username is', username)
         console.log('password is', password)
 
-        const user = await User.findOne({username: username, password: password})
+        const user = await User.findOne({ username: username, password: password })
         res.locals.verfiedUser = user
         if (user) {
             return next()
@@ -50,8 +50,8 @@ UserController.verifyUser = async (req, res, next) => {
         }
     }
     catch (err) {
-        return next (err)
-    }  
+        return next(err)
+    }
 }
 
 UserController.getUser = async (req, res, next) => {
