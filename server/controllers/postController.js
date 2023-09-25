@@ -23,7 +23,7 @@ PostController.addPost = async (req, res, next) => {
         res.locals.newPost = post;
         return next();
     } catch (err) {
-        return next(err);
+        return next({});
     }
 }
 
