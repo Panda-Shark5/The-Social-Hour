@@ -10,9 +10,10 @@ router.post('/register', userController.addUser, (req, res) => {
 });
 
 router.post('/login', userController.verifyUser, (req, res) => {
-    try {console.log('inside login endpoint')
-    
-        return res.redirect('http://localhost:3000/profile')
+    try {
+        console.log('inside login endpoint')
+
+        return res.redirect('http://localhost:3000/feed')
     } catch (err) {
         console.log(err)
     }
