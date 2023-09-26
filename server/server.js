@@ -1,37 +1,51 @@
-const bodyParser = require('body-parser');
+// Import Dependencies
 const express = require('express');
-const app = express();
-app.use(express.json());
+const bodyParser = require('body-parser');
+const cors = require('cors');
 const dotenv = require('dotenv');
-const mongoose = require('mongoose');
+const db = require('./db');
+const { Client } = require('pg'); // Import PostgreSQL Client
+// const mongoose = require('mongoose');
 const multer = require('multer');
 const path = require('path');
-const cors = require('cors');
-
-
-app.use(express.urlencoded())
-app.use(bodyParser.json())
-
-app.use(cors())
 const cookieParser = require('cookie-parser');
 
-app.use(cookieParser());
+// Initialize Express App
+const app = express();
 
-dotenv.config();
+// Configuration and Middleware
+dotenv.config(); // Load environment variables
+app.use(express.json()); // Parse JSON request bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded request bodies
+app.use(cors()); // Enable CORS
+app.use(cookieParser()); // Parse cookies
 
+// Database Connection
+const client = new Client({
+    connectionString:'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq' /*process.env.ELEPHANTSQL_URL*/, // Use your ElephantSQL connection string
+    ssl: { rejectUnauthorized: false }, // Necessary for ElephantSQL, remove in production
+});
+
+client.connect()
+    .then(() => console.log("Successfully connected to PostgreSQL!"))
+    .catch(err => console.error("Connection failed", err));
+
+// mongoose.connect("mongodb+srv://pkarwe62:JFZBtUu007N2kkwN@cluster0.ru954su.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp", { useNewUrlParser: true, useUnifiedTopology: true }, () => {
+//     console.log("Successfully connected to MongoDB!");
+// });
+
+// Static Files
+app.use('/assets', express.static(path.join(__dirname, '../src/assets')));
+
+// Route Imports
 const userRoute = require('./routes/userRouter');
 const postRoute = require('./routes/postRouter');
 
-const port = 3001;
-
-mongoose.connect("mongodb+srv://pkarwe62:JFZBtUu007N2kkwN@cluster0.ru954su.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp", { useNewUrlParser: true, useUnifiedTopology: true }, () => {
-    console.log("Successfully connected to MongoDB!");
-});
-
-app.use('../src/assets', express.static(path.join(__dirname, '../src/assets')));
-app.use('/users', userRoute);
+// Route Handling
+app.use('/api/users', userRoute);
 app.use('/posts', postRoute);
 
+// File Upload Handling
 const imageStorage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, '../src/assets');
@@ -41,36 +55,33 @@ const imageStorage = multer.diskStorage({
     },
 });
 
-
 const upload = multer({ storage: imageStorage });
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
     try {
-        //return res.status(200).json('File successfully uploaded');
-
-        // Added redirect because multer keeps sending the user to /api/upload
-
+        // Redirect to the desired URL after successful file upload
         return res.redirect('http://localhost:3000/feed');
     } catch (err) {
         console.log(err);
     }
 });
 
-//global error
+// Global Error Handling
 app.use('/*', (err, req, res, next) => {
     const defaultErr = {
         log: 'Global Error',
         status: 500,
-        message: { err: 'An Error Has Ocurred' },
+        message: { err: 'An Error Has Occurred' },
     };
     const errorObj = Object.assign({}, defaultErr, err);
     console.log(errorObj.log);
     return res.status(errorObj.status).json(errorObj.message);
 });
 
+// Start the Server
+const port = 3001;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
-
 
 module.exports = app;
