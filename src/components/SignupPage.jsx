@@ -15,9 +15,9 @@ const SignupPage = props => {
                 <p>Enter your credentials to register:</p>
                 <form method="POST" action="http://localhost:3001/users/register" encType="multipart/form-data" id="upload-post">
                     <div>
-                        <label htmlFor="username">Username:</label>
+                        <label htmlFor="username">Username: </label>
                         <input type="text" name="username" id="username" /><br />
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password">Password: </label>
                         <input type="text" name="password" id="username" /><br />
                     </div>
                     <div>

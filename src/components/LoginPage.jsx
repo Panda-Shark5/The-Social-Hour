@@ -8,7 +8,7 @@ const LoginPage = props => {
     return (
         <div class="main-div">
             <div class="centered-div">
-                <h1>Welcome To The Codesmith Social Hour</h1>
+                <h1>Welcome to Social Hour</h1>
                 <p>Enter your credentials to login:</p>
                 <form method="POST" action="http://localhost:3001/users/login" encType="multipart/form-data" id="upload-post">
                     <div>
