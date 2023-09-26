@@ -9,7 +9,7 @@ const SignupPage = props => {
 
     return (
 
-        <div>
+        <div class="main-div">
             <h1>Welcome To The CRUDverse</h1>
             <p>Enter your credentials to register:</p>
             <form method="POST" action="http://localhost:3001/users/register" encType="multipart/form-data" id="upload-post">
