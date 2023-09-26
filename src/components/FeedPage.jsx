@@ -10,12 +10,22 @@ const imageList = images.keys().map(image => images(image));
 
 const FeedPage = props => {
   return (
-    <div>
-      <h1>Feed page</h1>
-      <Link className='link' to='/login'>
-        <h1>Logout</h1>
-      </Link>
-      <UploadImage />
+    <div class="whole-div">
+      
+      <header class="header">
+        <div class="small-div">
+          <UploadImage />
+        </div>
+        <h1>Social Hour</h1>
+        <div class="small-div">
+          <Link className='link' to='/login'>
+            <h1>Logout</h1>
+          </Link>
+        </div>
+        
+
+      </header>
+    
       <div>
         {imageList.map((image, index) => (
           <div>
