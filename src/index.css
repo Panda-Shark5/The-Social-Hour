@@ -18,12 +18,18 @@ code {
 
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  background: linear-gradient(to bottom, lightskyblue, lightblue);
+ 
   
 }
 
 .main-div {
   text-align: center; 
+  height: 100vh;
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
   
 }
 body{
