@@ -30,9 +30,8 @@ const SignupPage = props => {
     };
 
     return (
-
         <div>
-            <h1>Welcome To The CRUDverse</h1>
+        <h1>Social Hour</h1>
             <p>Enter your credentials to register:</p>
             <form onSubmit={handleSignup}>
                 <div>
@@ -68,7 +67,7 @@ const SignupPage = props => {
                     Click Here to Log In To An Existing Account 
                 </Link> 
             </div>
-        </div>
+            </div>
     );
 };
 
