@@ -1,14 +1,19 @@
 import { Link } from 'react-router-dom';
 import UploadImage from './UploadImage';
-
-
-const images = require.context('../assets', true);
-const imageList = images.keys().map(image => images(image));
-
-
-
+import React, { useEffect, useState } from 'react';
 
 const FeedPage = props => {
+  const [imageURLs, setImageURLs] = useState([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3001/api/images')
+      .then(response => response.json())
+      .then(data => setImageURLs(data.map(item => item.url)))
+      .catch(err => console.error('Fetch error:', err));
+  }, []);
+
+  
+
   return (
     <div class="whole-div">
       
@@ -27,9 +32,9 @@ const FeedPage = props => {
       </header>
     
       <div>
-        {imageList.map((image, index) => (
+        {imageURLs.map((url, index) => (
           <div>
-            <img key={index} src={image} alt={`test-${index}`} height='500px' />
+            <img key={index} src={url} alt={`test-${index}`} height='500px' />
             <br></br>
           </div>
         ))}
