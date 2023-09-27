@@ -3,7 +3,9 @@ import { useState } from 'react'
 
 
 const SignupPage = props => {
+
     const navigate = useNavigate();
+
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -34,8 +36,9 @@ const SignupPage = props => {
     };
 
     return (
-        <div>
-        <h1>Social Hour</h1>
+        <div class="main-div">
+            <div class="centered-div">
+            <h1>Social Hour</h1>
             <p>Enter your credentials to register:</p>
             <form onSubmit={handleSignup}>
                 <div>
@@ -71,6 +74,7 @@ const SignupPage = props => {
                     Click Here to Log In To An Existing Account 
                 </Link> 
             </div>
+        </div>
             </div>
     );
 };

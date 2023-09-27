@@ -22,7 +22,7 @@ router.post('/register', async (req, res) => {
         await db.none('INSERT INTO users (username, password) VALUES ($1, $2)', [username, password]);
 
         return res.status(201).json({ message: 'Registration successful.' });
-        
+
     } catch (error) {
         console.error('Error during registration:', error);
         return res.status(500).json({ message: 'An error occurred during registration.' });
