@@ -21,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(cookieParser());
 
+
 // AWS S3 Configuration
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -45,6 +46,7 @@ app.use('/assets', express.static(path.join(__dirname, '../src/assets')));
 // Import Routes
 const userRoute = require('./routes/userRouter');
 const postRoute = require('./routes/postRouter');
+const postssController = require('./controllers/postssController.js')
 
 // Use Routes
 app.use('/api/users', userRoute);
@@ -60,8 +62,24 @@ app.use('/posts', postRoute);
 //     }
 //   })
 // });
+// const imageStorage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, '../src/assets');
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, file.originalname);
+//     },
+// });
 
-const upload = multer({ storage: imageStorage });
+// const upload = multer({ storage: imageStorage });
+
+
+
+app.get('/posts', postssController.getPics, (req, res) => {
+
+        
+})
+
 
 // Upload Route
 app.post('/api/upload', 

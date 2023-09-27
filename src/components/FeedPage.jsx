@@ -9,6 +9,14 @@ const imageList = images.keys().map(image => images(image));
 
 
 const FeedPage = props => {
+
+  fetch('/posts')
+  .then()
+
+
+
+
+  
   return (
     <div class="whole-div">
       

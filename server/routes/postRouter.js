@@ -9,6 +9,10 @@ router.post('/', PostController.addPost, (req, res) => {
     return res.status(200).json(res.locals.newPost);
 });
 
+
+
+
+
 router.get('/', PostController.getAllPosts, (req, res) => {
     return res.status(200).json(res.locals.allPosts);
 });
