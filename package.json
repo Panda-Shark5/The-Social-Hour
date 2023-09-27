@@ -10,16 +10,20 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "aws-sdk": "^2.1465.0",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "formidable": "^3.5.1",
     "mongodb": "^6.1.0",
     "mongoose": "^7.5.2",
     "multer": "^1.4.5-lts.1",
+    "multer-s3": "^3.0.1",
     "node": "^20.6.0",
     "nodemon": "^3.0.1",
+    "pg-promise": "^11.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.1.2",
@@ -31,7 +35,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev": "concurrently \"npm run start\" \"node server/server.js\""
   },
   "eslintConfig": {
     "extends": [

@@ -1,76 +1,101 @@
-const bodyParser = require('body-parser');
+// Import Dependencies
 const express = require('express');
-const app = express();
-app.use(express.json());
-const dotenv = require('dotenv');
-const mongoose = require('mongoose');
-const multer = require('multer');
-const path = require('path');
 const cors = require('cors');
-
-
-app.use(express.urlencoded())
-app.use(bodyParser.json())
-
-app.use(cors())
+const dotenv = require('dotenv');
+const { Client } = require('pg'); // Import PostgreSQL Client
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+const path = require('path');
 const cookieParser = require('cookie-parser');
+const AWS = require('aws-sdk'); // AWS SDK setup
 
-app.use(cookieParser());
+// Initialize Express App
+const app = express();
 
+// Load Environment Variables
 dotenv.config();
 
+// Middleware Configuration
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.use(cookieParser());
+
+// AWS S3 Configuration
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: 'US East (Ohio) us-east-2'
+});
+const s3 = new AWS.S3();
+
+// Database Connection using PostgreSQL
+const client = new Client({
+  // Use your ElephantSQL connection string
+  connectionString: 'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq',
+  ssl: { rejectUnauthorized: false },
+});
+client.connect()
+  .then(() => console.log("Successfully connected to PostgreSQL!"))
+  .catch(err => console.error("Connection failed", err));
+
+// Static Files
+app.use('/assets', express.static(path.join(__dirname, '../src/assets')));
+
+// Import Routes
 const userRoute = require('./routes/userRouter');
 const postRoute = require('./routes/postRouter');
 
-const port = 3001;
-
-mongoose.connect("mongodb+srv://pkarwe62:JFZBtUu007N2kkwN@cluster0.ru954su.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp", { useNewUrlParser: true, useUnifiedTopology: true }, () => {
-    console.log("Successfully connected to MongoDB!");
-});
-
-app.use('../src/assets', express.static(path.join(__dirname, '../src/assets')));
-app.use('/users', userRoute);
+// Use Routes
+app.use('/api/users', userRoute);
 app.use('/posts', postRoute);
 
-const imageStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, '../src/assets');
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname);
-    },
-});
-
-
-const upload = multer({ storage: imageStorage });
-
-app.post('/api/upload', upload.single('file'), (req, res) => {
-    try {
-        //return res.status(200).json('File successfully uploaded');
-
-        // Added redirect because multer keeps sending the user to /api/upload
-
-        return res.redirect('http://localhost:3000/feed');
-    } catch (err) {
-        console.log(err);
+// S3 File Upload Configuration
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'PandaShark',
+    key: function (req, file, cb) {
+      cb(null, `${Date.now().toString()}-${file.originalname}`);
     }
+  })
 });
 
-//global error
+// Upload Route
+app.post('/api/upload', 
+    (req, res, next) => {
+        console.log("Before upload.single");
+        next();
+    }, 
+    upload.single('file'), 
+    (err, req, res, next) => {
+        if (err) {
+          console.log('Multer error:', err);
+          return res.status(400).json({error: err.message});
+        }
+        next();
+    },
+    (req, res) => {
+        console.log('passed upload.single middleware');
+        const imageUrl = req.file.location;
+        // store image in DB
+        res.redirect('http://localhost:3000/feed');
+});
+
+// Global Error Handling
 app.use('/*', (err, req, res, next) => {
-    const defaultErr = {
-        log: 'Global Error',
-        status: 500,
-        message: { err: 'An Error Has Ocurred' },
-    };
-    const errorObj = Object.assign({}, defaultErr, err);
-    console.log(errorObj.log);
-    return res.status(errorObj.status).json(errorObj.message);
+  const defaultErr = {
+    log: 'Global Error',
+    status: 500,
+    message: { err: 'An Error Has Occurred' },
+  };
+  const errorObj = Object.assign({}, defaultErr, err);
+  console.log(errorObj.log);
+  return res.status(errorObj.status).json(errorObj.message);
 });
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
-
+// Start Server
+const port = 3001;
+app.listen(port, () => console.log(`Server is running on port ${port}`));
 
 module.exports = app;
