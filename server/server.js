@@ -7,7 +7,8 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const AWS = require('aws-sdk'); // AWS SDK setup
+const { S3 } = require('@aws-sdk/client-s3');
+
 
 // Initialize Express App
 const app = express();
@@ -23,12 +24,13 @@ app.use(cookieParser());
 
 
 // AWS S3 Configuration
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: 'US East (Ohio) us-east-2'
+const s3 = new S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+  region: 'us-east-2',  // Ensure the region format is correct
 });
-const s3 = new AWS.S3();
 
 // Database Connection using PostgreSQL
 const client = new Client({
@@ -53,54 +55,53 @@ app.use('/api/users', userRoute);
 app.use('/posts', postRoute);
 
 // S3 File Upload Configuration
-// const upload = multer({
-//   storage: multerS3({
-//     s3: s3,
-//     bucket: 'PandaShark',
-//     key: function (req, file, cb) {
-//       cb(null, `${Date.now().toString()}-${file.originalname}`);
-//     }
-//   })
-// });
-// const imageStorage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, '../src/assets');
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, file.originalname);
-//     },
-// });
-
-// const upload = multer({ storage: imageStorage });
-
-
-
-app.get('/posts', postssController.getPics, (req, res) => {
-
-        
-})
-
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'pandashark',
+    key: function (req, file, cb) {
+      cb(null, `${Date.now().toString()}-${file.originalname}`);
+    }
+  })
+});
 
 // Upload Route
 app.post('/api/upload', 
-    (req, res, next) => {
-        console.log("Before upload.single");
-        next();
-    }, 
-    upload.single('file'), 
-    (err, req, res, next) => {
-        if (err) {
-          console.log('Multer error:', err);
-          return res.status(400).json({error: err.message});
-        }
-        next();
-    },
-    (req, res) => {
-        console.log('passed upload.single middleware');
+    upload.single('image'), 
+    async (req, res, next) => {
+      if (req.file) {
         const imageUrl = req.file.location;
-        // store image in DB
-        res.redirect('http://localhost:3000/feed');
+        const query = 'INSERT INTO posts(img, likes) VALUES($1, $2) RETURNING *';
+        const values = [imageUrl, 0];
+
+        try {
+          const dbResponse = await client.query(query, values);
+          console.log('Record inserted:', dbResponse.rows[0]);
+          res.send('Image uploaded and stored in database.');
+        } catch (err) {
+          console.error('Database insert error:', err);
+          res.status(500).send('Internal Server Error');
+        }
+      }
+    });
+
+// Fetch images route 
+
+app.get('/api/images', async (req, res) => {
+  console.log('hitting api/images endpoint')
+  const query = 'SELECT * FROM posts ORDER BY id';
+  try {
+    const dbResponse = await client.query(query);
+    res.json(dbResponse.rows);
+  } catch (err) {
+    console.error('Database fetch error:', err);
+    res.status(500).send('Internal Server Error');
+  }
 });
+
+app.post('/api/likes', postssController.getLikes, (req, res) => {
+   res.status(200).json(res.locals.objToUpdate);
+})
 
 // Global Error Handling
 app.use('/*', (err, req, res, next) => {
