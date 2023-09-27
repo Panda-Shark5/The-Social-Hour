@@ -19,9 +19,17 @@ const FeedPage = (props) => {
       .catch((err) => console.error("Fetch error:", err));
   }, []);
 
+  
   async function handleClick(e) {
-    console.log(e.target.id);
-    let id = e.target.id
+
+    console.log("e.target.id", e.target.id);
+
+    const indexAndId = e.target.id.split("$")
+    let id = Number(indexAndId[0])
+    console.log('id', id)
+    let index = Number(indexAndId[1])
+    console.log('index', index)
+
     try {
       const response = await fetch("http://localhost:3001/api/likes", {
         method: "POST",
@@ -30,10 +38,22 @@ const FeedPage = (props) => {
         },
         body: JSON.stringify({bestInteger: id}),
       });
-      // console.log('File uploaded successfully:', response.data);
+      const jsonedResponse = await response.json();
+      console.log('Likes updated successfully:', jsonedResponse);
+
+      // const postObjCopy = postsObjects.slice();
+      
+      // postObjCopy[index].likes = jsonedResponse[0].likes;
+      const updatedPostsObjects = [...postsObjects];
+      updatedPostsObjects[index].likes = jsonedResponse[0].likes;
+
+      setPostsObjects(updatedPostsObjects);
+    //  setPostsObjects(postObjCopy);
+     return
     } catch (error) {
       console.error("Error:", error);
     }
+
   }
 
   return (
@@ -51,11 +71,11 @@ const FeedPage = (props) => {
       </header>
 
       <div>
-        {postsObjects.toReversed().map((object, index) => (
+        {postsObjects.slice().toReversed().map((object, index) => (
           <div>
             <img key={index} src={object.img} alt={`test-${index}`} height="500px" />
             <br></br>
-            <button id={object.id} onClick={handleClick}>
+            <button id={String(object.id) + '$' + String(index)} onClick={handleClick}>
               LIKE
             </button>
             <span> {object.likes} like this</span>

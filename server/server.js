@@ -103,6 +103,10 @@ app.post('/api/likes', postssController.getLikes, (req, res) => {
    res.status(200).json(res.locals.objToUpdate);
 })
 
+
+ 
+
+
 // Global Error Handling
 app.use('/*', (err, req, res, next) => {
   const defaultErr = {

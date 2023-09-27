@@ -23,7 +23,7 @@ postssController.getLikes = async function(req, res, next){
         //update that row in database by incrementing likes
         console.log('current likes', postId)
 
-        const queryStr2 = 'UPDATE posts SET likes = $1 WHERE id = $2';
+        const queryStr2 = 'UPDATE posts SET likes = $1 WHERE id = $2 RETURNING *';
 
   
 
