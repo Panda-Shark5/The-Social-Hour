@@ -1,13 +1,17 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
 
 const SignupPage = props => {
 
+    const navigate = useNavigate();
+
+
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSignup = async (e) => {
+
         e.preventDefault();
         console.log('button clicked')
         try {
@@ -21,6 +25,8 @@ const SignupPage = props => {
 
             if (response.ok) {
                 // Registration successful, you can redirect the user or show a success message
+                navigate('/feed'); // Redirects the user to the posts page.
+
             } else {
                 // Handle registration failure, e.g., display an error message
             }
@@ -30,8 +36,9 @@ const SignupPage = props => {
     };
 
     return (
-        <div>
-        <h1>Social Hour</h1>
+        <div class="main-div">
+            <div class="centered-div">
+            <h1>Social Hour</h1>
             <p>Enter your credentials to register:</p>
             <form onSubmit={handleSignup}>
                 <div>
@@ -49,7 +56,7 @@ const SignupPage = props => {
                 <div>
                     <label htmlFor="password">Password</label>
                     <input 
-                        type="text" 
+                        type="password" 
                         name="password" 
                         id="password"
                         value={password}
@@ -67,6 +74,7 @@ const SignupPage = props => {
                     Click Here to Log In To An Existing Account 
                 </Link> 
             </div>
+        </div>
             </div>
     );
 };
