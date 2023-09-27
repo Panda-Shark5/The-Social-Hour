@@ -4,8 +4,30 @@ import { useState } from 'react'
 
 const SignupPage = props => {
 
-    const [usernameInput, setUsernameInput] = useState('')
-    const [passwordInput, setPasswordInput] = useState('')
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+
+    const handleSignup = async (e) => {
+        e.preventDefault();
+        console.log('button clicked')
+        try {
+            const response = await fetch('http://localhost:3001/api/users/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (response.ok) {
+                // Registration successful, you can redirect the user or show a success message
+            } else {
+                // Handle registration failure, e.g., display an error message
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
 
     return (
 
