@@ -20,14 +20,10 @@ const SignupPage = (props) => {
       });
       if (response.ok) {
         navigate('/feed', { replace: true });
+      } else {
+        console.log('inside else');
+        alert('username already exists');
       }
-
-      //   if (response.ok) {
-      //     // Registration successful, you can redirect the user or show a success message
-      //     console.log('hello');
-      //   } else {
-      //     // Handle registration failure, e.g., display an error message
-      //   }
     } catch (error) {
       console.error('Error:', error);
     }
