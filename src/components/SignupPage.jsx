@@ -1,9 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 const SignupPage = (props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const navigate = useNavigate();
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -16,13 +18,16 @@ const SignupPage = (props) => {
         },
         body: JSON.stringify({ username, password }),
       });
-
       if (response.ok) {
-        // Registration successful, you can redirect the user or show a success message
-        console.log('hello');
-      } else {
-        // Handle registration failure, e.g., display an error message
+        navigate('/feed', { replace: true });
       }
+
+      //   if (response.ok) {
+      //     // Registration successful, you can redirect the user or show a success message
+      //     console.log('hello');
+      //   } else {
+      //     // Handle registration failure, e.g., display an error message
+      //   }
     } catch (error) {
       console.error('Error:', error);
     }

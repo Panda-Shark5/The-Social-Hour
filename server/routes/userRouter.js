@@ -5,9 +5,9 @@ const db = require('../db');
 const userController = require('../controllers/userController');
 const cookieController = require('../controllers/cookieController');
 
-router.post('/register', userController.addUser, async (req, res) => {
+router.post('/register', userController.addUser, (req, res) => {
   console.log('inside post');
-  res.status(200);
+  res.status(200).send().redirect('/feed');
 });
 
 router.post('/login', async (req, res) => {
