@@ -39,24 +39,57 @@ const LoginPage = props => {
     }
 
     return (
-        <div class="main-div">
-            <div class="centered-div">
-                <h1>Welcome to Social Hour</h1>
-                <p>Enter your credentials to login:</p>
-                <form method="POST" action="http://localhost:3001/users/login" encType="multipart/form-data" id="upload-post">
-                    <div>
-                        <label htmlFor="username">Username: </label>
-                        <input type="text" name="username" id="username" /><br />
-                        <label htmlFor="password">Password: </label>
-                        <input type="text" name="password" id="username" /><br />
-                    </div>
-                    <div>
-                        <input type="submit" value="Login" />
-                    </div>
-                </form>
-                <div> <Link className='link' to='/signup' >Click Here to Create an Account</Link> </div>
-            </div>
+        // <div class="main-div">
+        //     <div class="centered-div">
+        //         <h1>Welcome to Social Hour</h1>
+        //         <p>Enter your credentials to login:</p>
+        //         <form method="POST" action="http://localhost:3001/users/login" encType="multipart/form-data" id="upload-post">
+        //             <div>
+        //                 <label htmlFor="username">Username: </label>
+        //                 <input type="text" name="username" id="username" /><br />
+        //                 <label htmlFor="password">Password: </label>
+        //                 <input type="text" name="password" id="username" /><br />
+        //             </div>
+        //             <div>
+        //                 <input type="submit" value="Login" />
+        //             </div>
+        //         </form>
+        //         <div> <Link className='link' to='/signup' >Click Here to Create an Account</Link> </div>
+        //     </div>
         
+        <div>
+            <h1>Social Hour</h1>
+            <p>Enter your credentials to login:</p>
+            <form onSubmit={handleLogin}>
+                <div>
+                    <label htmlFor="username">Username:</label>
+                    <input 
+                        type="text" 
+                        value={username} 
+                        onChange={(e) => setUsername(e.target.value)} 
+                        name="username" 
+                        id="username" 
+                    />
+                    <br />
+                    <label htmlFor="password">Password</label>
+                    <input 
+                        type="password" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)}
+                        name="password" 
+                        id="password" 
+                    />
+                    <br />
+                </div>
+                <div>
+                    <input type="submit" value="Login" />
+                </div>
+            </form>
+            <div> 
+                <Link className='link' to='/signup' >
+                    Click Here to Create an Account
+                </Link> 
+            </div>
         </div>
     )
 }
