@@ -7,7 +7,8 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const path = require('path');
 const cookieParser = require('cookie-parser');
-const AWS = require('aws-sdk'); // AWS SDK setup
+const { S3 } = require('@aws-sdk/client-s3');
+
 
 // Initialize Express App
 const app = express();
@@ -22,12 +23,13 @@ app.use(cors());
 app.use(cookieParser());
 
 // AWS S3 Configuration
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: 'US East (Ohio) us-east-2'
+const s3 = new S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+  region: 'us-east-2',  // Ensure the region format is correct
 });
-const s3 = new AWS.S3();
 
 // Database Connection using PostgreSQL
 const client = new Client({
@@ -54,7 +56,7 @@ app.use('/posts', postRoute);
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: 'PandaShark',
+    bucket: 'pandashark',
     key: function (req, file, cb) {
       cb(null, `${Date.now().toString()}-${file.originalname}`);
     }
@@ -63,23 +65,36 @@ const upload = multer({
 
 // Upload Route
 app.post('/api/upload', 
-    (req, res, next) => {
-        console.log("Before upload.single");
-        next();
-    }, 
-    upload.single('file'), 
-    (err, req, res, next) => {
-        if (err) {
-          console.log('Multer error:', err);
-          return res.status(400).json({error: err.message});
-        }
-        next();
-    },
-    (req, res) => {
-        console.log('passed upload.single middleware');
+    upload.single('image'), 
+    async (req, res, next) => {
+      if (req.file) {
         const imageUrl = req.file.location;
-        // store image in DB
-        res.redirect('http://localhost:3000/feed');
+        const query = 'INSERT INTO images(url) VALUES($1) RETURNING *';
+        const values = [imageUrl];
+
+        try {
+          const dbResponse = await client.query(query, values);
+          console.log('Record inserted:', dbResponse.rows[0]);
+          res.send('Image uploaded and stored in database.');
+        } catch (err) {
+          console.error('Database insert error:', err);
+          res.status(500).send('Internal Server Error');
+        }
+      }
+    });
+
+// Fetch images route 
+
+app.get('/api/images', async (req, res) => {
+  console.log('hitting api/images endpoint')
+  const query = 'SELECT url FROM images';
+  try {
+    const dbResponse = await client.query(query);
+    res.json(dbResponse.rows);
+  } catch (err) {
+    console.error('Database fetch error:', err);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 // Global Error Handling
