@@ -1,70 +1,81 @@
 const User = require('../models/UserModel');
-const { formidable } = require('formidable')
+const { formidable } = require('formidable');
+const db = require('../db');
+const bcrypt = require('bcrypt');
 
 const UserController = {};
 
 UserController.addUser = async (req, res, next) => {
-    console.log('inside adduser')
-    try {
-        const form = formidable({});
-        let fields; let files;
-        [fields, files] = await form.parse(req)
+  const { username, password } = req.body;
 
-        const username = String(fields['username']);
-        const password = String(fields['password']);
+  try {
+    console.log('hitting register endpoint');
+    // Check for an existing user with the same username or email
+    const userExists = await db.oneOrNone(
+      'SELECT * FROM users WHERE username = $1',
+      [username]
+    );
 
-        console.log('username is', username)
-        console.log('password is', password)
-
-        const user = await User.create({ username: username, password: password })
-        console.log('created user is', user)
-        if (user) {
-            return next()
-        } else {
-            res.redirect('http://localhost:3000/signup')
-        }
-    } catch (err) {
-        res.redirect('http://localhost:3000/signup')
+    if (userExists) {
+      console.log('checking if user exists');
+      return res
+        .status(400)
+        .json({ message: 'Username or email is already in use.' });
     }
-}
+    console.log('after userExist query');
+    //bcrypting password
+    console.log('before hashing');
+    const hash = await bcrypt.hash(password, 10);
+    console.log('after hashing');
+    // Insert the new user into the database
+    await db.none('INSERT INTO users (username, password) VALUES ($1, $2)', [
+      username,
+      hash,
+    ]);
+    console.log('hellooo');
+    next();
+  } catch (error) {
+    console.error('Error during registration:', error);
+    return res
+      .status(500)
+      .json({ message: 'An error occurred during registration.' });
+  }
+};
 
 UserController.verifyUser = async (req, res, next) => {
-    try {
+  try {
+    const form = formidable({});
+    let fields;
+    let files;
+    [fields, files] = await form.parse(req);
 
-        const form = formidable({});
-        let fields; let files;
-        [fields, files] = await form.parse(req)
+    const username = String(fields['username']);
+    const password = String(fields['password']);
 
-        const username = String(fields['username']);
-        const password = String(fields['password']);
+    console.log('username is', username);
+    console.log('password is', password);
 
-        console.log('username is', username)
-        console.log('password is', password)
-
-        const user = await User.findOne({ username: username, password: password })
-        res.locals.verfiedUser = user
-        if (user) {
-            return next()
-        } else {
-            res.redirect('http://localhost:3000/login')
-        }
+    const user = await User.findOne({ username: username, password: password });
+    res.locals.verfiedUser = user;
+    if (user) {
+      return next();
+    } else {
+      res.redirect('http://localhost:3000/login');
     }
-    catch (err) {
-        return next(err)
-    }
-}
+  } catch (err) {
+    return next(err);
+  }
+};
 
 UserController.getUser = async (req, res, next) => {
-
-    try {
-        const { id } = req.params;
-        const user = await User.findOne({ _id: id });
-        res.locals.user = user;
-        return next();
-    } catch (err) {
-        return next(err);
-    }
-
-}
+  try {
+    const { id } = req.params;
+    const user = await User.findOne({ _id: id });
+    res.locals.user = user;
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
 
 module.exports = UserController;
