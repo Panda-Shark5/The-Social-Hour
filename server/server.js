@@ -51,15 +51,17 @@ app.use('/api/users', userRoute);
 app.use('/posts', postRoute);
 
 // S3 File Upload Configuration
-const upload = multer({
-  storage: multerS3({
-    s3: s3,
-    bucket: 'PandaShark',
-    key: function (req, file, cb) {
-      cb(null, `${Date.now().toString()}-${file.originalname}`);
-    }
-  })
-});
+// const upload = multer({
+//   storage: multerS3({
+//     s3: s3,
+//     bucket: 'PandaShark',
+//     key: function (req, file, cb) {
+//       cb(null, `${Date.now().toString()}-${file.originalname}`);
+//     }
+//   })
+// });
+
+const upload = multer({ storage: imageStorage });
 
 // Upload Route
 app.post('/api/upload', 
