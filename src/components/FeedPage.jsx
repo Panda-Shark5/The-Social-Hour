@@ -1,7 +1,13 @@
-import { Link } from 'react-router-dom';
-import UploadImage from './UploadImage';
-import { useState, useEffect } from 'react';
+import { Link } from "react-router-dom";
+import UploadImage from "./UploadImage";
+import { useState, useEffect } from "react";
+import LikeButton from "./LikeButton";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCheckSquare, faCoffee } from '@fortawesome/fontawesome-free-solid'
+const images = require.context("../assets", true);
+const imageList = images.keys().map((image) => images(image));
 import LikeButton from './LikeButton';
+
 
 const FeedPage = (props) => {
   const [postsObjects, setPostsObjects] = useState([]);
@@ -23,7 +29,7 @@ const FeedPage = (props) => {
         <div class="small-div">
           <UploadImage />
         </div>
-        <h1>Social Hour</h1>
+        <h1 id='top'>Social Hour</h1>
         <div className="small-div">
           <Link className="link" to="/login">
             <button id='logoutbutton'>
@@ -48,7 +54,7 @@ const FeedPage = (props) => {
                 width='550px'
               />
               <br></br>
-              <LikeButton id={object.id} likes={object.likes}/>
+              <LikeButton id={object.id} likes={object.likes} icon = {faCoffee}/>
             </div>
           ))}
       </div>
