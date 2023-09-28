@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import LikeButton from './LikeButton';
 import Comments from './Comments';
 
+
+
 const FeedPage = (props) => {
   const [commentsMap, setCommentsMap] = useState(new Map());
   const [postsObjects, setPostsObjects] = useState([]);
@@ -51,9 +53,10 @@ const FeedPage = (props) => {
         <div className='small-div'>
           <UploadImage />
         </div>
-        <h1>Social Hour</h1>
-        <div className='small-div'>
-          <Link className='link' to='/login'>
+
+        <h1 id='top'>Social Hour</h1>
+        <div className="small-div">
+          <Link className="link" to="/login">
             <button id='logoutbutton'>
               <h1>Logout</h1>
             </button>
@@ -80,6 +83,7 @@ const FeedPage = (props) => {
                 postId={object.id}
                 comments={commentsMap.get(object.id) || []}
               />
+           
             </div>
           ))}
       </div>
