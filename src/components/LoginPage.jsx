@@ -14,7 +14,6 @@ const LoginPage = (props) => {
       alert('Please enter a username and password');
       return;
     }
-    console.log('button clicked');
     try {
       const response = await fetch('http://localhost:3001/api/users/login', {
         method: 'POST',
