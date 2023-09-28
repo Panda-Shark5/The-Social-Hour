@@ -7,7 +7,7 @@ const cookieController = require('../controllers/cookieController');
 
 router.post('/register', userController.addUser, async (req, res) => {
   console.log('inside post');
-  res.status(200);
+  res.status(200).send();
 });
 
 // router.post('/login', async (req, res) => {

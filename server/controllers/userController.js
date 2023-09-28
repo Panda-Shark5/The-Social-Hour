@@ -29,7 +29,7 @@ UserController.addUser = async (req, res, next) => {
     const hash = await bcrypt.hash(password, 10);
     console.log('after hashing');
     //bcrypting password
-    const hash = await bcrypt.hash(password, 10);
+    // const hash = await bcrypt.hash(password, 10);
     // Insert the new user into the database
     await db.none('INSERT INTO users (username, password) VALUES ($1, $2)', [
       username,

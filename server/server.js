@@ -44,9 +44,9 @@ client
   .connect()
   .then(() => console.log('Successfully connected to PostgreSQL!'))
   .catch((err) => console.error('Connection failed', err));
-  connectionString: 'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq', // Use your ElephantSQL connection string
-  ssl: { rejectUnauthorized: false },
-});
+  // connectionString: 'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq', // Use your ElephantSQL connection string
+  // ssl: { rejectUnauthorized: false },
+// });
 
 // === Connect to PostgreSQL Database ===
 async function connectDB() {
