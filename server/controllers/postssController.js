@@ -1,49 +1,53 @@
 const { queryResult } = require('pg-promise');
 const db = require('../db');
 
-
-
 const postssController = {};
 
+postssController.getLikes = async function (req, res, next) {
+  let { bestInteger } = req.body;
+  // console.log("req", req.body)
 
-postssController.getLikes = async function(req, res, next){
+  try {
+    console.log('bestInteger', bestInteger);
 
-    let { bestInteger } = req.body;
-    // console.log("req", req.body)
+    //get post row from database
+    const queryStr1 = 'SELECT likes FROM posts WHERE id = $1';
 
-    try {
+    const postId = await db.query(queryStr1, [bestInteger]);
 
-        console.log("bestInteger", bestInteger);
+    //update that row in database by incrementing likes
+    console.log('current likes', postId);
 
-        //get post row from database
-        const queryStr1 = 'SELECT likes FROM posts WHERE id = $1';
+    const queryStr2 = 'UPDATE posts SET likes = $1 WHERE id = $2 RETURNING *';
 
-        const postId = await db.query(queryStr1, [bestInteger])
+    const newLikesCount = postId[0].likes + 1;
 
-        //update that row in database by incrementing likes
-        console.log('current likes', postId)
+    const update = await db.query(queryStr2, [newLikesCount, bestInteger]);
 
-        const queryStr2 = 'UPDATE posts SET likes = $1 WHERE id = $2 RETURNING *';
+    res.locals.objToUpdate = update;
+    console.log('updated likes', update);
+    return next();
+  } catch {
+    return next({
+      log: "couldn't update likes",
+      message: "oof couldn't update likes",
+    });
+  }
+};
 
-  
+postssController.retrieveInfo = async function (req, res, next) {
+  try {
+    const queryPost = 'SELECT * FROM "posts"';
 
-        const newLikesCount = postId[0].likes + 1;
-
-
-        const update = await db.query(queryStr2, [newLikesCount, bestInteger]);
-
-        res.locals.objToUpdate = update;
-        console.log('updated likes', update)
-        return next();
-
-    } catch{
-        return next({
-            log: "couldn't update likes",
-            message: "oof couldn't update likes"
-        })
-    }
-    
-
-}
+    const postInfo = await db.query(queryPost);
+    res.locals.postInfo = postInfo;
+    next();
+  } catch {
+    return next({
+      log: "couldn't update likes",
+      message: "oof couldn't update likes",
+    });
+  }
+};
 
 module.exports = postssController;

@@ -9,7 +9,6 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const { S3 } = require('@aws-sdk/client-s3');
 
-
 // Initialize Express App
 const app = express();
 
@@ -22,25 +21,26 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(cookieParser());
 
-
 // AWS S3 Configuration
 const s3 = new S3({
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
-  region: 'us-east-2',  // Ensure the region format is correct
+  region: 'us-east-2', // Ensure the region format is correct
 });
 
 // Database Connection using PostgreSQL
 const client = new Client({
   // Use your ElephantSQL connection string
-  connectionString: 'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq',
+  connectionString:
+    'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq',
   ssl: { rejectUnauthorized: false },
 });
-client.connect()
-  .then(() => console.log("Successfully connected to PostgreSQL!"))
-  .catch(err => console.error("Connection failed", err));
+client
+  .connect()
+  .then(() => console.log('Successfully connected to PostgreSQL!'))
+  .catch((err) => console.error('Connection failed', err));
 
 // Static Files
 app.use('/assets', express.static(path.join(__dirname, '../src/assets')));
@@ -48,7 +48,7 @@ app.use('/assets', express.static(path.join(__dirname, '../src/assets')));
 // Import Routes
 const userRoute = require('./routes/userRouter');
 const postRoute = require('./routes/postRouter');
-const postssController = require('./controllers/postssController.js')
+const postssController = require('./controllers/postssController.js');
 
 // Use Routes
 app.use('/api/users', userRoute);
@@ -61,34 +61,32 @@ const upload = multer({
     bucket: 'pandashark',
     key: function (req, file, cb) {
       cb(null, `${Date.now().toString()}-${file.originalname}`);
-    }
-  })
+    },
+  }),
 });
 
 // Upload Route
-app.post('/api/upload', 
-    upload.single('image'), 
-    async (req, res, next) => {
-      if (req.file) {
-        const imageUrl = req.file.location;
-        const query = 'INSERT INTO posts(img, likes) VALUES($1, $2) RETURNING *';
-        const values = [imageUrl, 0];
+app.post('/api/upload', upload.single('image'), async (req, res, next) => {
+  if (req.file) {
+    const imageUrl = req.file.location;
+    const query = 'INSERT INTO posts(img, likes) VALUES($1, $2) RETURNING *';
+    const values = [imageUrl, 0];
 
-        try {
-          const dbResponse = await client.query(query, values);
-          console.log('Record inserted:', dbResponse.rows[0]);
-          res.send('Image uploaded and stored in database.');
-        } catch (err) {
-          console.error('Database insert error:', err);
-          res.status(500).send('Internal Server Error');
-        }
-      }
-    });
+    try {
+      const dbResponse = await client.query(query, values);
+      console.log('Record inserted:', dbResponse.rows[0]);
+      res.send('Image uploaded and stored in database.');
+    } catch (err) {
+      console.error('Database insert error:', err);
+      res.status(500).send('Internal Server Error');
+    }
+  }
+});
 
-// Fetch images route 
+// Fetch images route
 
 app.get('/api/images', async (req, res) => {
-  console.log('hitting api/images endpoint')
+  console.log('hitting api/images endpoint');
   const query = 'SELECT * FROM posts ORDER BY id';
   try {
     const dbResponse = await client.query(query);
@@ -99,13 +97,13 @@ app.get('/api/images', async (req, res) => {
   }
 });
 
-app.post('/api/likes', postssController.getLikes, (req, res) => {
-   res.status(200).json(res.locals.objToUpdate);
+app.get('/api/likes', postssController.retrieveInfo, (req, res) => {
+  res.status(200).json(res.locals.postInfo)
 })
 
-
- 
-
+app.patch('/api/likes', postssController.getLikes, (req, res) => {
+  res.status(200).json(res.locals.objToUpdate);
+});
 
 // Global Error Handling
 app.use('/*', (err, req, res, next) => {

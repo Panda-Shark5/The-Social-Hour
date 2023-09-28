@@ -1,35 +1,30 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
+const SignupPage = (props) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
-const SignupPage = props => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    console.log('button clicked');
+    try {
+      const response = await fetch('http://localhost:3001/api/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
 
-
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-
-    const handleSignup = async (e) => {
-
-        e.preventDefault();
-        console.log('button clicked')
-        try {
-            const response = await fetch('http://localhost:3001/api/users/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password }),
-            });
-
-            if (response.ok) {
-                // Registration successful, you can redirect the user or show a success message
-                navigate('/feed'); // Redirects the user to the posts page.
-
-            } else {
-                // Handle registration failure, e.g., display an error message
-            }
+      if (response.ok) {
+        // Registration successful, you can redirect the user or show a success message
+        navigate('/feed'); // Redirects the user to the posts page.
+      } else {
+        // Handle registration failure, e.g., display an error message
+      }
         } catch (error) {
             console.error('Error:', error);
         }
