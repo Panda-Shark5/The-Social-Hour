@@ -19,10 +19,8 @@ const SignupPage = (props) => {
         body: JSON.stringify({ username, password }),
       });
 
-      console.log('res', response)
 
       if (response.status === 200) {
-        console.log('hello laura sucks')
         navigate("/feed", { replace: true });
       } else {
         console.log("inside else");
