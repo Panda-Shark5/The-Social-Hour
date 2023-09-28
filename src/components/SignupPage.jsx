@@ -33,45 +33,46 @@ const SignupPage = (props) => {
 
   return (
     <div className="main-div">
-      <div className="centered-div">
-        <h1>Social Hour</h1>
-        <p>Enter your credentials to register:</p>
-        <form onSubmit={handleSignup}>
-          <div>
-            <label htmlFor="username">Username:</label>
-            <input
-              type="text"
-              name="username"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-            <br />
-          </div>
-          <div>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              name="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <br />
-          </div>
-          <div>
-            <input type="submit" value="Sign Up" />
-          </div>
-        </form>
-        <div>
-          <Link className="link" to="/login">
-            Click Here to Log In To An Existing Account
-          </Link>
-        </div>
+  <div className="centered-div">
+    <h1 className='title'>Create Account</h1>
+    <p>Enter your credentials to register:</p>
+    <form onSubmit={handleSignup} className="login-form">
+      <div>
+        <label htmlFor="username">Username:</label>
+        <input
+          type="text"
+          name="username"
+          id="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <br />
       </div>
-    </div>
+      <div>
+        <label htmlFor="password">Password: </label>
+        <input
+          type="password"
+          name="password"
+          id="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <br />
+      </div>
+      <div className="button-container">
+        <input type="submit" value="Sign Up" />
+        <button id='createaccount'>
+          <Link className="link" to="/login">
+            Already a User? Sign in!
+          </Link>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
   );
 };
 

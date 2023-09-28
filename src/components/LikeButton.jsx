@@ -1,4 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import { faHeart } from '@fortawesome/free-regular-svg-icons';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
+
+import '../index.css'
 
 function LikeButton(props) {
   const [likes, setLikes] = useState("");
@@ -36,6 +41,7 @@ function LikeButton(props) {
       console.log("Response Data", data);
 
       setLikes(data[0].likes);
+      setLiked(!liked)
     } catch (error) {
       console.log(error);
     }
@@ -44,17 +50,29 @@ function LikeButton(props) {
   return (
     <div>
       <button
+
         id={props.id}
-        className={`like-button ${liked ? "liked" : ""}`} //dynamic class name based on whether it is like or not. If is liked the class is like-button.liked
+        className={`like-button ${liked ? "liked" : ""} `} //dynamic class name based on whether it is like or not. If is liked the class is like-button.liked
         onClick={(e) => {
           handleClick(e);
           // setLikes(likes + 1);
           setLiked(true);
         }}
       >
-        <i className={`fas fa-heart ${liked ? 'liked' : ''}`}></i>
+        
+      <FontAwesomeIcon id={props.id} icon={faHeart} className={`heart-icon ${liked ? "red-fill" : ""}`} 
+      style={{color: liked ? "red" : "black",
+pointerEvents: 'auto' }}    />
+
+
+        
       </button>
-      <span> {likes} LIKE THIS</span>
+      
+      {liked ? (
+        <span id="likethis"> You and {likes} others like this</span>
+      ) : (
+        <span id="likethis"> {likes} LIKE THIS</span>
+      )}      
     </div>
   );
 }
