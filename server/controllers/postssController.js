@@ -1,4 +1,3 @@
-const { queryResult } = require('pg-promise');
 const db = require('../db');
 
 const postssController = {};
@@ -49,5 +48,38 @@ postssController.retrieveInfo = async function (req, res, next) {
     });
   }
 };
+
+postssController.addComment = async function (req, res, next) {
+  console.log('im in the addComment middleware func');
+
+  try {
+    const { postId, comment } = req.body;
+    console.log('in the try block', postId, comment);
+
+    const queryString =
+      'INSERT INTO comments(comment, post_id) VALUES ($1, $2) RETURNING *';
+
+    const addedComment = await db.query(queryString, [comment, postId]);
+
+    console.log('made the query', addedComment);
+
+    res.locals.addedComment = addedComment;
+
+    return next();
+  } catch {
+    return next({
+      log: 'error in addComment middleware function',
+      message: 'error in addComment middleware function',
+    });
+  }
+};
+
+//   postssController.getComments = async function (req, res, next) {
+//     try {
+//       const
+//     } catch{
+//     }
+//   };
+// };
 
 module.exports = postssController;

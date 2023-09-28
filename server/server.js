@@ -29,8 +29,6 @@ const s3 = new S3({
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
   region: 'us-east-2', // Ensure the region format is correct
-
-  region: 'us-east-2',
 });
 
 // === PostgreSQL Database Connection ===
@@ -44,17 +42,17 @@ client
   .connect()
   .then(() => console.log('Successfully connected to PostgreSQL!'))
   .catch((err) => console.error('Connection failed', err));
-  // connectionString: 'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq', // Use your ElephantSQL connection string
-  // ssl: { rejectUnauthorized: false },
+// connectionString: 'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq', // Use your ElephantSQL connection string
+// ssl: { rejectUnauthorized: false },
 // });
 
 // === Connect to PostgreSQL Database ===
 async function connectDB() {
   try {
     await client.connect();
-    console.log("Successfully connected to PostgreSQL!");
+    console.log('Successfully connected to PostgreSQL!');
   } catch (err) {
-    console.error("Connection failed", err);
+    console.error('Connection failed', err);
   }
 }
 
@@ -63,14 +61,14 @@ async function disconnectDB() {
   await client.end();
 }
 
-
-
 // === Start and Stop Server ===
 let server;
 const port = 3001;
 
 function startServer() {
-  server = app.listen(port, () => console.log(`Server is running on port ${port}`));
+  server = app.listen(port, () =>
+    console.log(`Server is running on port ${port}`)
+  );
 }
 
 function stopServer() {
@@ -82,7 +80,7 @@ connectDB()
     startServer();
   })
   .catch((err) => {
-    console.error("Failed to start server due to DB connection issue:", err);
+    console.error('Failed to start server due to DB connection issue:', err);
   });
 
 // === Static File Serving ===
@@ -131,24 +129,22 @@ app.post('/api/upload', upload.single('image'), async (req, res, next) => {
 // === API Routes ===
 
 // Upload image
-app.post('/api/upload', 
-    upload.single('image'), 
-    async (req, res, next) => {
-      if (req.file) {
-        const imageUrl = req.file.location;
-        const query = 'INSERT INTO images(url) VALUES($1) RETURNING *';
-        const values = [imageUrl];
+app.post('/api/upload', upload.single('image'), async (req, res, next) => {
+  if (req.file) {
+    const imageUrl = req.file.location;
+    const query = 'INSERT INTO images(url) VALUES($1) RETURNING *';
+    const values = [imageUrl];
 
-        try {
-          const dbResponse = await client.query(query, values);
-          console.log('Record inserted:', dbResponse.rows[0]);
-          res.send('Image uploaded and stored in database.');
-        } catch (err) {
-          console.error('Database insert error:', err);
-          res.status(500).send('Internal Server Error');
-        }
-      }
-    });
+    try {
+      const dbResponse = await client.query(query, values);
+      console.log('Record inserted:', dbResponse.rows[0]);
+      res.send('Image uploaded and stored in database.');
+    } catch (err) {
+      console.error('Database insert error:', err);
+      res.status(500).send('Internal Server Error');
+    }
+  }
+});
 
 // Fetch images
 app.get('/api/images', async (req, res) => {
@@ -164,12 +160,20 @@ app.get('/api/images', async (req, res) => {
 });
 
 app.get('/api/likes', postssController.retrieveInfo, (req, res) => {
-  res.status(200).json(res.locals.postInfo)
-})
+  res.status(200).json(res.locals.postInfo);
+});
 
 app.patch('/api/likes', postssController.getLikes, (req, res) => {
   res.status(200).json(res.locals.objToUpdate);
 });
+
+app.post('/api/comments', postssController.addComment, (req, res) => {
+  res.status(200).json(res.locals.addedComment);
+});
+
+// app.get('/api/comments', postssController.getComments, (req, res) => {
+//   res.status(200).json(res.locals);
+// });
 
 // Global Error Handling
 // General GET route
@@ -191,13 +195,11 @@ app.use('/*', (err, req, res, next) => {
 
 // === Start Server ===
 
-
-
 // === Exports ===
 module.exports = {
   app,
   startServer,
   stopServer,
   connectDB,
-  disconnectDB
+  disconnectDB,
 };
