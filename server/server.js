@@ -33,10 +33,11 @@ const client = new Client({
     'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq',
   ssl: { rejectUnauthorized: false },
 });
-client
-  .connect()
-  .then(() => console.log('Successfully connected to PostgreSQL!'))
-  .catch((err) => console.error('Connection failed', err));
+
+// client
+//   .connect()
+//   .then(() => console.log('Successfully connected to PostgreSQL!'))
+//   .catch((err) => console.error('Connection failed', err));
 // connectionString: 'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq', // Use your ElephantSQL connection string
 // ssl: { rejectUnauthorized: false },
 // });
@@ -103,36 +104,14 @@ const upload = multer({
 });
 
 // Upload Route
-// app.post('/api/upload', upload.single('image'), async (req, res, next) => {
-//   if (req.file) {
-//     const imageUrl = req.file.location;
-//     const query = 'INSERT INTO posts(img, likes) VALUES($1, $2) RETURNING *';
-//     const values = [imageUrl, 0];
-
-//     try {
-//       const dbResponse = await client.query(query, values);
-//       res.send('Image uploaded and stored in database.');
-//     } catch (err) {
-//       console.error('Database insert error:', err);
-//       res.status(500).send('Internal Server Error');
-//     }
-//   }
-// });
-
-// Fetch images route
-
-// === API Routes ===
-
-// Upload image
 app.post('/api/upload', upload.single('image'), async (req, res, next) => {
   if (req.file) {
     const imageUrl = req.file.location;
-    const query = 'INSERT INTO images(url) VALUES($1) RETURNING *';
-    const values = [imageUrl];
+    const query = 'INSERT INTO posts(img, likes) VALUES($1, $2) RETURNING *';
+    const values = [imageUrl, 0];
 
     try {
       const dbResponse = await client.query(query, values);
-      console.log('Record inserted:', dbResponse.rows[0]);
       res.send('Image uploaded and stored in database.');
     } catch (err) {
       console.error('Database insert error:', err);
@@ -140,6 +119,30 @@ app.post('/api/upload', upload.single('image'), async (req, res, next) => {
     }
   }
 });
+
+// Fetch images route
+
+// === API Routes ===
+
+// Upload image
+// app.post('/api/upload', upload.single('image'), async (req, res, next) => {
+//   console.log('hit endpoint')
+//   if (req.file) {
+//     console.log('in if statement')
+//     const imageUrl = req.file.location;
+//     const query = 'INSERT INTO images(url) VALUES($1) RETURNING *';
+//     const values = [imageUrl];
+
+//     try {
+//       const dbResponse = await client.query(query, values);
+//       console.log('Record inserted:', dbResponse.rows[0]);
+//       res.send('Image uploaded and stored in database.');
+//     } catch (err) {
+//       console.error('Database insert error:', err);
+//       res.status(500).send('Internal Server Error');
+//     }
+//   }
+// });
 
 // Fetch images
 app.get('/api/images', async (req, res) => {

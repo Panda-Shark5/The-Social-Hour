@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-// import axios from 'axios';
+import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { faUpload } from '@fortawesome/free-solid-svg-icons';
@@ -10,13 +10,16 @@ const UploadImage = props => {
   const [selectedFile, setSelectedFile] = useState(null);
 
   const handleFileInput = (e) => {
+    console.log('file handled');
+    console.log(e.target.files[0]);
     setSelectedFile(e.target.files[0]);
+    console.log('selectedFile', selectedFile)
   }
 
   const handleUpload = async (e) => {
     e.preventDefault();
     console.log('handleUpload called'); // Add this line for debugging
-
+    console.log('selectedFile', selectedFile)
     if (!selectedFile) {
       alert('Please choose a file before uploading.');
       return; // Don't proceed with the upload
@@ -24,8 +27,10 @@ const UploadImage = props => {
     const uniqueKey = uuidv4();
     const formData = new FormData();
     formData.append('image', selectedFile, uniqueKey);
+    console.log('formData', formData);
     try {
-      const response = await fetch('http://localhost:3001/api/upload', formData, {
+      const response = await axios.post('http://localhost:3001/api/upload', formData, {
+        
         headers: {
           'Content-Type': 'multipart/form-data'
         },
@@ -56,17 +61,9 @@ const UploadImage = props => {
         <div>
           {/* <input type="submit" value="Upload photos" /> */}
           {/* <FontAwesomeIcon icon ={faPlusCircle} /> */}
-          <button id='uploadbutton' type="submit" className="upload-button" onClick ={handleUpload}>
+          <button id='uploadbutton' type="submit" className="upload-button" onSubmit ={handleUpload}>
           <FontAwesomeIcon icon={faPlusCircle} /> 
         </button>
-        
-//     <div className="left-div">
-//       <form className="make-row" onSubmit={handleUpload} id="upload-post">
-//         <div>
-//           <input type="file" name="file" onChange={handleFileInput} required data-testid="file-input"/>
-//         </div>
-//         <div>
-//           <input type="submit" value="Upload photo" data-testid="upload"/>
         </div>
       </form>
     </div>

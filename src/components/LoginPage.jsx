@@ -67,37 +67,7 @@ const LoginPage = (props) => {
       <button id='createaccount'>
         <Link className="link" to="/signup">
           Create Account
-//     <div>
-//       <h1>Social Hour</h1>
-//       <p>Enter your credentials to login:</p>
-//       <form onSubmit={handleLogin}>
-//         <div>
-//           <label htmlFor='username'>Username:</label>
-//           <input
-//             type='text'
-//             value={username}
-//             onChange={(e) => setUsername(e.target.value)}
-//             name='username'
-//             id='username'
-//           />
-//           <br />
-//           <label htmlFor='password'>Password:</label>
-//           <input
-//             type='password'
-//             value={password}
-//             onChange={(e) => setPassword(e.target.value)}
-//             name='password'
-//             id='password'
-//           />
-//           <br />
-//         </div>
-//         <div>
-//           <input type='submit' value='Login' />
-//         </div>
-//       </form>
-//       <div>
-//         <Link className='link' to='/signup'>
-//           Click Here to Create an Account
+
         </Link>
       </button>
     </div>
