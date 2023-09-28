@@ -32,7 +32,7 @@ const s3 = new S3({
 
 // === PostgreSQL Database Connection ===
 const client = new Client({
-  connectionString: 'postgres://...', // Use your ElephantSQL connection string
+  connectionString: 'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq', // Use your ElephantSQL connection string
   ssl: { rejectUnauthorized: false },
 });
 
@@ -51,8 +51,11 @@ async function disconnectDB() {
   await client.end();
 }
 
+
+
 // === Start and Stop Server ===
 let server;
+const port = 3001;
 
 function startServer() {
   server = app.listen(port, () => console.log(`Server is running on port ${port}`));
@@ -61,6 +64,14 @@ function startServer() {
 function stopServer() {
   server.close();
 }
+
+connectDB()
+  .then(() => {
+    startServer();
+  })
+  .catch((err) => {
+    console.error("Failed to start server due to DB connection issue:", err);
+  });
 
 // === Static File Serving ===
 app.use('/assets', express.static(path.join(__dirname, '../src/assets')));
@@ -87,10 +98,37 @@ const upload = multer({
 // === API Routes ===
 
 // Upload image
-app.post('/api/upload', upload.single('image'), async (req, res) => { /* ... */ });
+app.post('/api/upload', 
+    upload.single('image'), 
+    async (req, res, next) => {
+      if (req.file) {
+        const imageUrl = req.file.location;
+        const query = 'INSERT INTO images(url) VALUES($1) RETURNING *';
+        const values = [imageUrl];
+
+        try {
+          const dbResponse = await client.query(query, values);
+          console.log('Record inserted:', dbResponse.rows[0]);
+          res.send('Image uploaded and stored in database.');
+        } catch (err) {
+          console.error('Database insert error:', err);
+          res.status(500).send('Internal Server Error');
+        }
+      }
+    });
 
 // Fetch images
-app.get('/api/images', async (req, res) => { /* ... */ });
+app.get('/api/images', async (req, res) => {
+  console.log('hitting api/images endpoint')
+  const query = 'SELECT url FROM images';
+  try {
+    const dbResponse = await client.query(query);
+    res.json(dbResponse.rows);
+  } catch (err) {
+    console.error('Database fetch error:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 // General GET route
 app.get('/', (req, res) => {
@@ -98,11 +136,20 @@ app.get('/', (req, res) => {
 });
 
 // === Global Error Handling ===
-app.use('/*', (err, req, res, next) => { /* ... */ });
+app.use('/*', (err, req, res, next) => {
+  const defaultErr = {
+    log: 'Global Error',
+    status: 500,
+    message: { err: 'An Error Has Occurred' },
+  };
+  const errorObj = Object.assign({}, defaultErr, err);
+  console.log(errorObj.log);
+  return res.status(errorObj.status).json(errorObj.message);
+});
 
 // === Start Server ===
-const port = 3001;
-startServer();
+
+
 
 // === Exports ===
 module.exports = {
