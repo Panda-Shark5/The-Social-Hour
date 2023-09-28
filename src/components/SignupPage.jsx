@@ -19,16 +19,16 @@ const SignupPage = (props) => {
         body: JSON.stringify({ username, password }),
       });
 
-      if (response.ok) {
-        // Registration successful, you can redirect the user or show a success message
-        navigate('/feed'); // Redirects the user to the posts page.
+       if (response.ok) {
+        navigate('/feed', { replace: true });
       } else {
-        // Handle registration failure, e.g., display an error message
+        console.log('inside else');
+        alert('username already exists');
       }
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
     return (
         <div class="main-div">
@@ -69,9 +69,49 @@ const SignupPage = (props) => {
                     Click Here to Log In To An Existing Account 
                 </Link> 
             </div>
-        </div>
-            </div>
-    );
+)
+     
+
+//   return (
+//     <div>
+//       <h1>Social Hour</h1>
+//       <p>Enter your credentials to register:</p>
+//       <form onSubmit={handleSignup}>
+//         <div>
+//           <label htmlFor='username'>Username:</label>
+//           <input
+//             type='text'
+//             name='username'
+//             id='username'
+//             value={username}
+//             onChange={(e) => setUsername(e.target.value)}
+//             required
+//           />
+//           <br />
+//         </div>
+//         <div>
+//           <label htmlFor='password'>Password</label>
+//           <input
+//             type='text'
+//             name='password'
+//             id='password'
+//             value={password}
+//             onChange={(e) => setPassword(e.target.value)}
+//             required
+//           />
+//           <br />
+//         </div>
+//         <div>
+//           <input type='submit' value='Sign Up' />
+//         </div>
+//       </form>
+//       <div>
+//         <Link className='link' to='/login'>
+//           Click Here to Log In To An Existing Account
+//         </Link>
+//       </div>
+//     </div>
+//   );
 };
 
 export default SignupPage;
