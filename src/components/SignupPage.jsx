@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -9,7 +10,6 @@ const SignupPage = (props) => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-    console.log("button clicked");
     try {
       const response = await fetch("http://localhost:3001/api/users/register", {
         method: "POST",
@@ -22,10 +22,8 @@ const SignupPage = (props) => {
       console.log('res', response)
 
       if (response.status === 200) {
-        console.log('hello laura sucks')
         navigate("/feed", { replace: true });
       } else {
-        console.log("inside else");
         alert("username already exists");
       }
     } catch (error) {
@@ -52,7 +50,7 @@ const SignupPage = (props) => {
             <br />
           </div>
           <div>
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Password:</label>
             <input
               type="password"
               name="password"

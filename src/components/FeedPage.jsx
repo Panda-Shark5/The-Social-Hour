@@ -3,9 +3,6 @@ import UploadImage from './UploadImage';
 import { useState, useEffect } from 'react';
 import LikeButton from './LikeButton';
 
-const images = require.context('../assets', true);
-const imageList = images.keys().map((image) => images(image));
-
 const FeedPage = (props) => {
   const [postsObjects, setPostsObjects] = useState([]);
 

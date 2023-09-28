@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
 const UploadImage = props => {
@@ -15,7 +15,7 @@ const UploadImage = props => {
     const formData = new FormData();
     formData.append('image', selectedFile, uniqueKey);
     try {
-      const response = await axios.post('http://localhost:3001/api/upload', formData, {
+      const response = await fetch('http://localhost:3001/api/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
@@ -27,13 +27,13 @@ const UploadImage = props => {
   };
 
   return (
-    <div class="left-div">
-      <form class="make-row" onSubmit={handleUpload} id="upload-post">
+    <div className="left-div">
+      <form className="make-row" onSubmit={handleUpload} id="upload-post">
         <div>
-          <input type="file" name="file" onChange={handleFileInput} required />
+          <input type="file" name="file" onChange={handleFileInput} required data-testid="file-input"/>
         </div>
         <div>
-          <input type="submit" value="Upload photo" />
+          <input type="submit" value="Upload photo" data-testid="upload"/>
         </div>
       </form>
     </div>
