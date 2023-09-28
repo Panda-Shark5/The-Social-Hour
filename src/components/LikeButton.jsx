@@ -7,12 +7,6 @@ function LikeButton(props) {
   // setLikes(props.likes);
 
   useEffect(() => {
-    // fetch('http://localhost:3001/api/likes')
-    //   .then((response) => response.json())
-    //   .then((data) => {
-    //     console.log('pic info', data);
-    //   })
-    //   .catch((err) => console.error('Fetch error:', err));
     setLikes(props.likes);
   }, []);
 

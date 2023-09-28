@@ -74,12 +74,22 @@ postssController.addComment = async function (req, res, next) {
   }
 };
 
-//   postssController.getComments = async function (req, res, next) {
-//     try {
-//       const
-//     } catch{
-//     }
-//   };
-// };
+postssController.getComments = async function (req, res, next) {
+  console.log('inside comments');
+  try {
+    console.log('inside try block');
+    const allComments = 'SELECT * FROM "comments"';
+    const getAllComments = await db.query(allComments);
+    console.log('after query');
+    res.locals.commentsInfo = getAllComments;
+    console.log(res.locals.commentsInfo);
+    next();
+  } catch {
+    return next({
+      log: 'error in getComments middleware function',
+      message: 'error in getComments middleware function',
+    });
+  }
+};
 
 module.exports = postssController;

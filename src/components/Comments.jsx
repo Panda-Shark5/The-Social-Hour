@@ -1,22 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const Comments = (props) => {
-  const [commentsBox, setCommentsBox] = useState([]);
   const [comment, setComment] = useState('');
-
-  console.log(comment);
-
-  console.log('before addComents');
-
-  // useEffect(() => {
-  //   fetch('http://localhost:3001/api/comments')
-  //     .then((response) => response.json())
-  //     .then((data) => {
-  //       console.log('comments data', data);
-  //     });
-  // });
-
-  // useEffect()
 
   //fetch to send comment to database
   function addComment(e) {
@@ -32,15 +17,15 @@ const Comments = (props) => {
       .then((commentResponse) => commentResponse.json())
       .then((jsonedComment) => {
         console.log('coment back from db', jsonedComment);
-        setCommentsBox([...commentsBox, jsonedComment]);
+        // setCommentsBox([...commentsBox, jsonedComment]);
       });
   }
 
   return (
     <div>
       <div className='comments-container'>
-        {commentsBox.slice().map((comment, index) => (
-          <p key={index}>{comment}</p>
+        {props.comments.map((commentData, index) => (
+          <p key={index}>{commentData.comment}</p>
         ))}
       </div>
       <form onSubmit={addComment}>

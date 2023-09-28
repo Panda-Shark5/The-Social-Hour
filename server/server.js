@@ -171,9 +171,10 @@ app.post('/api/comments', postssController.addComment, (req, res) => {
   res.status(200).json(res.locals.addedComment);
 });
 
-// app.get('/api/comments', postssController.getComments, (req, res) => {
-//   res.status(200).json(res.locals);
-// });
+app.get('/api/comments', postssController.getComments, (req, res) => {
+  console.log('inside router get /api/comments');
+  res.status(200).json(res.locals);
+});
 
 // Global Error Handling
 // General GET route
