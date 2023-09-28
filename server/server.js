@@ -1,26 +1,20 @@
 // === Import Dependencies ===
 const express = require('express');
-const cors = require('cors');
 const dotenv = require('dotenv');
 const { Client } = require('pg');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const path = require('path');
-const cookieParser = require('cookie-parser');
 const { S3 } = require('@aws-sdk/client-s3');
+const setupMiddleware = require('./middleware');
 
 // Initialize Express App
 // === Initialize Express App ===
 const app = express();
+setupMiddleware(app);
 
 // === Load Environment Variables ===
 dotenv.config();
-
-// === Middleware Configuration ===
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
-app.use(cookieParser());
 
 // === AWS S3 Configuration ===
 const s3 = new S3({
@@ -28,8 +22,6 @@ const s3 = new S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
-  region: 'us-east-2', // Ensure the region format is correct
-
   region: 'us-east-2',
 });
 
@@ -40,13 +32,6 @@ const client = new Client({
     'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq',
   ssl: { rejectUnauthorized: false },
 });
-client
-  .connect()
-  .then(() => console.log('Successfully connected to PostgreSQL!'))
-  .catch((err) => console.error('Connection failed', err));
-  // connectionString: 'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq', // Use your ElephantSQL connection string
-  // ssl: { rejectUnauthorized: false },
-// });
 
 // === Connect to PostgreSQL Database ===
 async function connectDB() {
@@ -62,8 +47,6 @@ async function connectDB() {
 async function disconnectDB() {
   await client.end();
 }
-
-
 
 // === Start and Stop Server ===
 let server;
@@ -117,7 +100,6 @@ app.post('/api/upload', upload.single('image'), async (req, res, next) => {
 
     try {
       const dbResponse = await client.query(query, values);
-      console.log('Record inserted:', dbResponse.rows[0]);
       res.send('Image uploaded and stored in database.');
     } catch (err) {
       console.error('Database insert error:', err);
@@ -152,7 +134,6 @@ app.post('/api/upload',
 
 // Fetch images
 app.get('/api/images', async (req, res) => {
-  console.log('hitting api/images endpoint');
   const query = 'SELECT * FROM posts ORDER BY id';
   try {
     const dbResponse = await client.query(query);

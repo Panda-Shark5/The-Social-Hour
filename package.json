@@ -28,6 +28,7 @@
     "express": "^4.18.2",
     "font-awesome": "^4.7.0",
     "formidable": "^3.5.1",
+    "history": "^5.3.0",
     "mongodb": "^6.1.0",
     "mongoose": "^7.5.2",
     "multer": "^1.4.5-lts.1",
@@ -57,6 +58,14 @@
       "react-app/jest"
     ]
   },
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(axios)/)"
+    ]
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -70,6 +79,10 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.22.20",
+    "@babel/preset-react": "^7.22.15",
+    "babel-jest": "^29.7.0",
     "concurrently": "^8.2.1"
   }
 }

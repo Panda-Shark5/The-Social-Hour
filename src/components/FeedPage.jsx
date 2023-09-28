@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckSquare, faCoffee } from '@fortawesome/fontawesome-free-solid'
 const images = require.context("../assets", true);
 const imageList = images.keys().map((image) => images(image));
+import LikeButton from './LikeButton';
+
 
 const FeedPage = (props) => {
   const [postsObjects, setPostsObjects] = useState([]);
