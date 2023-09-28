@@ -1,58 +1,90 @@
-// Import Dependencies
+// === Import Dependencies ===
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { Client } = require('pg'); // Import PostgreSQL Client
+const { Client } = require('pg');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const { S3 } = require('@aws-sdk/client-s3');
 
-
-// Initialize Express App
+// === Initialize Express App ===
 const app = express();
 
-// Load Environment Variables
+// === Load Environment Variables ===
 dotenv.config();
 
-// Middleware Configuration
+// === Middleware Configuration ===
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(cookieParser());
 
-// AWS S3 Configuration
+// === AWS S3 Configuration ===
 const s3 = new S3({
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
-  region: 'us-east-2',  // Ensure the region format is correct
+  region: 'us-east-2',
 });
 
-// Database Connection using PostgreSQL
+// === PostgreSQL Database Connection ===
 const client = new Client({
-  // Use your ElephantSQL connection string
-  connectionString: 'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq',
+  connectionString: 'postgres://olohyivq:a-97tniKSJw31Bdg5-fFx1Ay3v7UDuIH@drona.db.elephantsql.com/olohyivq', // Use your ElephantSQL connection string
   ssl: { rejectUnauthorized: false },
 });
-client.connect()
-  .then(() => console.log("Successfully connected to PostgreSQL!"))
-  .catch(err => console.error("Connection failed", err));
 
-// Static Files
+// === Connect to PostgreSQL Database ===
+async function connectDB() {
+  try {
+    await client.connect();
+    console.log("Successfully connected to PostgreSQL!");
+  } catch (err) {
+    console.error("Connection failed", err);
+  }
+}
+
+// === Disconnect from PostgreSQL Database ===
+async function disconnectDB() {
+  await client.end();
+}
+
+
+
+// === Start and Stop Server ===
+let server;
+const port = 3001;
+
+function startServer() {
+  server = app.listen(port, () => console.log(`Server is running on port ${port}`));
+}
+
+function stopServer() {
+  server.close();
+}
+
+connectDB()
+  .then(() => {
+    startServer();
+  })
+  .catch((err) => {
+    console.error("Failed to start server due to DB connection issue:", err);
+  });
+
+// === Static File Serving ===
 app.use('/assets', express.static(path.join(__dirname, '../src/assets')));
 
-// Import Routes
+// === Route Imports ===
 const userRoute = require('./routes/userRouter');
 const postRoute = require('./routes/postRouter');
 
-// Use Routes
+// === Use Routes ===
 app.use('/api/users', userRoute);
 app.use('/posts', postRoute);
 
-// S3 File Upload Configuration
+// === S3 File Upload ===
 const upload = multer({
   storage: multerS3({
     s3: s3,
@@ -63,7 +95,9 @@ const upload = multer({
   })
 });
 
-// Upload Route
+// === API Routes ===
+
+// Upload image
 app.post('/api/upload', 
     upload.single('image'), 
     async (req, res, next) => {
@@ -83,8 +117,7 @@ app.post('/api/upload',
       }
     });
 
-// Fetch images route 
-
+// Fetch images
 app.get('/api/images', async (req, res) => {
   console.log('hitting api/images endpoint')
   const query = 'SELECT url FROM images';
@@ -97,7 +130,12 @@ app.get('/api/images', async (req, res) => {
   }
 });
 
-// Global Error Handling
+// General GET route
+app.get('/', (req, res) => {
+  res.status(200).send();
+});
+
+// === Global Error Handling ===
 app.use('/*', (err, req, res, next) => {
   const defaultErr = {
     log: 'Global Error',
@@ -109,8 +147,15 @@ app.use('/*', (err, req, res, next) => {
   return res.status(errorObj.status).json(errorObj.message);
 });
 
-// Start Server
-const port = 3001;
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+// === Start Server ===
 
-module.exports = app;
+
+
+// === Exports ===
+module.exports = {
+  app,
+  startServer,
+  stopServer,
+  connectDB,
+  disconnectDB
+};
