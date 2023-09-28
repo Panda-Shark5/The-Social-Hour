@@ -19,7 +19,6 @@ const SignupPage = (props) => {
         body: JSON.stringify({ username, password }),
       });
 
-      console.log('res', response)
 
       if (response.status === 200) {
         navigate("/feed", { replace: true });
