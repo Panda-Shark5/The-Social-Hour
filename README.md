@@ -14,12 +14,13 @@ Getting Started 🚀
 
 - Clone the repository
 git clone https://github.com/your-username/the-social-hour.git
-
-- Install dependencies
+```
+# Install dependencies
 npm install
 
-- Start the website
+# Start the website
 npm start
+```
 
 # License 📝
 This project is licensed under the MIT License 
